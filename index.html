@@ -749,23 +749,35 @@ async function loadState(){
   }catch(e){
     setStatus('pronto (novo)');
   }
+  if(!state.meta['m_data']) state.meta['m_data'] = todayBR();
   render();
 }
 function resetState(){
   if(!confirm('Limpar todos os dados preenchidos nesta ficha?')) return;
   state = {meta:{}, checks:{}, grades:{}, procs:{}, meds:{}, medVals:{}, fees:{}, feeVals:{}, teeth:{}, openSections:{}};
+  state.meta['m_data'] = todayBR();
   render();
   saveState();
 }
 function newRecord(){
   if(!confirm('Iniciar uma nova ficha? Os dados preenchidos aqui na tela serão apagados (o que já foi salvo anteriormente continua guardado no navegador).')) return;
   state = {meta:{}, checks:{}, grades:{}, procs:{}, meds:{}, medVals:{}, fees:{}, feeVals:{}, teeth:{}, openSections:{}};
+  state.meta['m_data'] = todayBR();
   render();
   saveState();
   window.scrollTo({top:0, behavior:'smooth'});
   setStatus('nova ficha ✓');
 }
 function setStatus(txt){ document.getElementById('statusText').textContent = txt; }
+
+// Data de hoje no formato usado na ficha (dd/mm/aa)
+function todayBR(){
+  const d = new Date();
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  const yy = String(d.getFullYear()).slice(-2);
+  return `${dd}/${mm}/${yy}`;
+}
 
 // ---------- HELPERS ----------
 function val(id){ const el = document.getElementById(id); return el ? el.value.trim() : ''; }
