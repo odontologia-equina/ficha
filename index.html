@@ -37,8 +37,8 @@
   header.top{
     position:sticky; top:0; z-index:20;
     background:var(--ivory)ee; backdrop-filter:blur(6px);
-    display:flex;justify-content:space-between;align-items:center;
-    gap:10px; padding:8px 2px 10px; margin-bottom:14px;
+    display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
+    gap:8px 10px; padding:8px 2px 10px; margin-bottom:14px;
     border-bottom:2px solid var(--teal);
   }
   .brand{display:flex;align-items:center;gap:10px;}
@@ -50,9 +50,15 @@
   }
   .brand h1{font-family:'Fraunces',serif;font-weight:600;font-size:18px;margin:0;line-height:1.05;}
   .brand p{margin:1px 0 0;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);opacity:.75;}
+  .new-record-btn{
+    border:1.4px solid var(--teal); background:var(--teal); color:var(--ivory);
+    padding:8px 13px; border-radius:999px; font-size:12.5px; font-weight:700;
+    cursor:pointer; white-space:nowrap; order:3; margin-left:auto;
+  }
+  .new-record-btn:active{opacity:.85;}
   .status{
     font-family:'Space Mono',monospace;font-size:10px;color:var(--teal);
-    display:flex;align-items:center;gap:6px; white-space:nowrap;
+    display:flex;align-items:center;gap:6px; white-space:nowrap; order:4;
   }
   .dot{width:6px;height:6px;border-radius:50%;background:var(--ok);flex-shrink:0;}
 
@@ -253,6 +259,7 @@
         <p>Ficha Clínica</p>
       </div>
     </div>
+    <button class="new-record-btn" onclick="newRecord()">+ Nova Ficha</button>
     <div class="status"><span class="dot"></span><span id="statusText">carregando…</span></div>
   </header>
 
@@ -260,25 +267,25 @@
   <div class="meta-card">
     <h3>Identificação</h3>
     <div class="meta-grid">
-      <div class="field"><label>Data</label><input id="m_data" value="13/08/26"></div>
-      <div class="field"><label>Equino</label><input id="m_equino" value="ZAINO"></div>
-      <div class="field"><label>Raça</label><input id="m_raca" value="C"></div>
-      <div class="field"><label>Idade</label><input id="m_idade" value="5A"></div>
-      <div class="field"><label>Sexo</label><input id="m_sexo" value="M"></div>
+      <div class="field"><label>Data</label><input id="m_data" placeholder="__/__/__"></div>
+      <div class="field"><label>Equino</label><input id="m_equino" placeholder="—"></div>
+      <div class="field"><label>Raça</label><input id="m_raca" placeholder="—"></div>
+      <div class="field"><label>Idade</label><input id="m_idade" placeholder="—"></div>
+      <div class="field"><label>Sexo</label><input id="m_sexo" placeholder="—"></div>
       <div class="field"><label>Peso</label><input id="m_peso" placeholder="—"></div>
       <div class="field"><label>ECC (1–9)</label><input id="m_ecc" placeholder="—"></div>
       <div class="field"><label>M.V. clínico</label><input id="m_mv" placeholder="—"></div>
-      <div class="field"><label>Proprietário</label><input id="m_prop" value="Douglas"></div>
+      <div class="field"><label>Proprietário</label><input id="m_prop" placeholder="—"></div>
       <div class="field"><label>E-mail</label><input id="m_email" placeholder="—"></div>
       <div class="field"><label>Fone</label><input id="m_fone" placeholder="—"></div>
-      <div class="field"><label>Local</label><input id="m_local" value="CT Moreira"></div>
+      <div class="field"><label>Local</label><input id="m_local" placeholder="—"></div>
     </div>
   </div>
 
   <div class="meta-card">
     <h3>Histórico &amp; exame geral</h3>
     <div class="meta-grid">
-      <div class="field" style="grid-column:span 2;"><label>Histórico</label><input id="m_hist" value="1º Procedimento"></div>
+      <div class="field" style="grid-column:span 2;"><label>Histórico</label><input id="m_hist" placeholder="—"></div>
       <div class="field"><label>Último procedimento</label><input id="m_ultproc" placeholder="__/__/__"></div>
       <div class="field"><label>Simetria da face</label><input id="m_simetria" placeholder="—"></div>
       <div class="field"><label>ATM</label><input id="m_atm" placeholder="—"></div>
@@ -701,7 +708,7 @@ function bindMeta(){
   META_IDS.forEach(id=>{
     const el = document.getElementById(id);
     if(!el) return;
-    if(state.meta[id]!==undefined) el.value = state.meta[id];
+    el.value = state.meta[id]!==undefined ? state.meta[id] : '';
     el.oninput=()=>{ state.meta[id]=el.value; };
   });
 }
@@ -749,6 +756,14 @@ function resetState(){
   state = {meta:{}, checks:{}, grades:{}, procs:{}, meds:{}, medVals:{}, fees:{}, feeVals:{}, teeth:{}, openSections:{}};
   render();
   saveState();
+}
+function newRecord(){
+  if(!confirm('Iniciar uma nova ficha? Os dados preenchidos aqui na tela serão apagados (o que já foi salvo anteriormente continua guardado no navegador).')) return;
+  state = {meta:{}, checks:{}, grades:{}, procs:{}, meds:{}, medVals:{}, fees:{}, feeVals:{}, teeth:{}, openSections:{}};
+  render();
+  saveState();
+  window.scrollTo({top:0, behavior:'smooth'});
+  setStatus('nova ficha ✓');
 }
 function setStatus(txt){ document.getElementById('statusText').textContent = txt; }
 
